@@ -51,6 +51,16 @@ class field {
 	fieldSquare[posX][posY].remPossibleNumber(value);
     }
 
+    // Return a value from possible list
+    public boolean getPossibleNumber(int number, int posX, int posY) {
+	boolean possible = fieldSquare[posX][posY].getPossibleNumber(number);
+
+	if (false)
+	    System.out.println("Get possible number: ("+posX+","+posY+") Value:"+possible);
+
+	return possible;
+    }
+
      /**
      * Method for drawing the sudoku field (correct numbers) in a terminal.
      */
@@ -105,7 +115,7 @@ class field {
 			// Get the possible numbers from all squares
 			{
 			    if (fieldSquare[j][i].
-				getPossibleNumbers(k))
+				getPossibleNumber(k))
 				temp = temp.concat(""+k+"");
 			    else
 				temp = temp.concat(" ");

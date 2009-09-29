@@ -15,6 +15,7 @@ class solver {
     public void solve() {
         int correctSquares = 0;
         int iterations = 0;
+        int maxIterations = 50;
 	
 	solverField.drawFieldCorrect();
 
@@ -26,13 +27,11 @@ class solver {
             // Count iterations
             iterations++;
 
-           
 	    cleanRows();
 	    cleanColumns();
-	    cleanSections();
+	    cleanBox();
 
-	    //fillSinglesRows();
-	    //fillSinglesCols();
+            findNakedPairs();
 
             correctSquares = 0;
             for (int row = 0; row < fieldSize; row++) {
@@ -42,14 +41,17 @@ class solver {
                 }
             }
 	} while ((correctSquares != fieldSize*fieldSize) &&
-		 (iterations < 50));
+		 (iterations < maxIterations));
 
 	if (verbose)
 	    solverField.drawFieldPossible();
 
 	solverField.drawFieldCorrect();
 
-        System.out.println("Solved in "+iterations+" iterations"); 
+        if (iterations < maxIterations)
+            System.out.println("Solved in "+iterations+" iterations"); 
+        else
+            System.out.println("Not solved in "+iterations+" iterations"); 
     }
 
     private void cleanColumns() {
@@ -79,7 +81,6 @@ class solver {
         
         for (int col = 0; col < fieldSize; col++) {
 	    for (int row = 0; row < fieldSize ; row++) {
-		//
 		int squareVal = solverField.getValue(col,row);
 		if (squareVal != 0) {
 		    // Remove squareVal from row
@@ -91,7 +92,7 @@ class solver {
 	}
     }
 
-    protected void cleanSections() {
+    protected void cleanBox() {
 	if (false)
 	    System.out.println("cleanSections()");
         int steps = 0;
@@ -124,7 +125,61 @@ class solver {
 	}
     }
 
-    protected boolean fillSinglesRows() {
+    private boolean findNakedPairs() {
+	boolean result = false;
+	int[][] pair = new int[2][2];
+        int pairCount;
+        boolean correctPair = true;
+        int firstCol = 0;
+        int firstRow = 0; 
+
+        for (int row = 0; row < fieldSize; row++) {
+            pairCount = 0;
+            correctPair = true;
+	    for (int col = 0; col < fieldSize ; col++) {
+
+		// Check if there is 2 numbers left
+	        if (solverField.getNumbersLeft(col,row) == 2) {
+
+		    // Check which two numbers are left in square
+		    int pairNumbers = 0;
+		    for (int i = 1; i < fieldSize + 1; i++) {
+			if (solverField.getPossibleNumber(i,col, row)) {
+                            if (pairCount == 0) {
+			        pair[pairCount][pairNumbers] = i;
+                                firstCol = col;
+                                firstRow = row;
+                            }
+                            else if (pairCount == 1) {
+                                if (pair[0][pairNumbers] == i) {
+                                    if (correctPair) {
+                                        correctPair = false;
+                                    }
+                                    else {
+                                        // Second Number correct, naked pair found
+                                        for (int j = 0; j < fieldSize; j++) {
+                                            if ((col != firstCol) && (col != j)) {
+                                                solverField.remPossibleNumber(pair[0][0], j, row);
+                                                solverField.remPossibleNumber(pair[0][1], j, row);
+                                            }
+                                        }
+                                    }    
+                                }
+                            }
+
+			    if (pairNumbers++ > 1) {
+                                //error
+                            }
+			}
+		    }
+                    pairCount++;
+		}
+	    }
+	}
+	return result;
+    }
+
+    private boolean fillSinglesRows() {
 	boolean result = false;
 	
 	if (false)

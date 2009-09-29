@@ -77,7 +77,7 @@ class square {
      *  
      *  Gets the possible numbers from list
      */
-    public boolean getPossibleNumbers(int number) {
+    public boolean getPossibleNumber(int number) {
 	return possibleNumbers[number];
     };
 
