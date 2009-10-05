@@ -31,7 +31,11 @@ class solver {
 	    cleanColumns();
 	    cleanBox();
 
+//	    solverField.drawFieldPossible();
+            findSinglesRows();
+            findSinglesCols();
             findNakedPairs();
+//	    solverField.drawFieldPossible();
 
             correctSquares = 0;
             for (int row = 0; row < fieldSize; row++) {
@@ -179,94 +183,120 @@ class solver {
 	return result;
     }
 
-    private boolean fillSinglesRows() {
+    private boolean findSinglesRows() {
 	boolean result = false;
-	
+        int singleCol = 0; 
+        int singleRow = 0; 
+        int singles = 0;
+
 	if (false)
-	    System.out.println("fillSinglesRows()");
+	    System.out.println("findSinglesRows()");
 	boolean values[] = new boolean[10];
 
         for (int row = 0; row < fieldSize; row++) {
-	    int emptyX = 0;
-	    int emptyY = 0;
-	    int emptyCnt = 0;
-	    // Set all tried values to false
-	    for (int i = 0 ; i < 10 ; i++)
-		values[i] = false;
+            // Check each number...
+            for (int number = 1; number < fieldSize+1; number++) {
+                singles = 0;
+                // ...in each column.
+                for (int col = 0; col < fieldSize; col++) {
+                    // If square is not set, check if the number is left in square
+                    if (solverField.getPossibleNumber(number , col, row)) {
+                        singleCol = col;
+                        singleRow = row;
+                        singles++;
+                    }
+                }
+                if (singles == 1) {
+                    solverField.setValue(number, singleCol, singleRow);
+                    result = true;
+                }
+            }
+	}
+	return result;
+    };
 
-	    for (int col = 0; col < fieldSize; col++) {			
-		// Retrive a values from a row
-		int tempVal = solverField.getValue(col,row);
-		if (tempVal == 0) {
-		    emptyCnt++;
-		    emptyX = col;
-		    emptyY = row;
-		}
-		else {
-		    values[tempVal] = true;
-		}
-				
-		//if (emptyCnt > 1)
-		    //break from loop
-		//    break;
+    private boolean findSinglesCols() {
+	boolean result = false;
+        int singleCol = 0; 
+        int singleRow = 0; 
+        int singles = 0;
 
-		if (col == 8 && emptyCnt < 2) {
-		    result = true;
-		    for (int j = 1; j < 10; j++) {
-			if (values[j] == false) {
-			    solverField.setValue(j, emptyX, emptyY);
-                        }
+	if (false)
+	    System.out.println("findSinglesCols()");
+	boolean values[] = new boolean[10];
+
+        for (int col = 0; col < fieldSize; col++) {
+            // Check each number...
+            for (int number = 1; number < fieldSize+1; number++) {
+                singles = 0;
+                // ...in each row.
+                for (int row = 0; row < fieldSize; row++) {
+                    // If square is not set, check if the number is left in square
+                    if (solverField.getPossibleNumber(number , col, row)) {
+                        singleCol = col;
+                        singleRow = row;
+                        singles++;
+                    }
+                }
+                if (singles == 1) {
+                    solverField.setValue(number, singleCol, singleRow);
+                    result = true;
+                }
+            }
+	}
+	return result;
+    };
+
+    protected void findSinglesBox() {
+	if (false)
+	    System.out.println("findSinglesBox()");
+        int steps = 0;
+        
+        // Check Boxes
+        for (int boxCol = 0; boxCol < fieldSize / 3; boxCol++) {
+
+            // Check each number...
+            for (int number = 1; number < fieldSize+1; number++) {
+                singles = 0;
+                // ...in each row.
+                for (int boxRow = 0; boxRow < fieldSize / 3; boxRow++) {
+                    // If square is not set, check if the number is left in square
+                    if (solverField.getPossibleNumber(number , col, row)) {
+                        singleCol = col;
+                        singleRow = row;
+                        singles++;
+                    }
+                }
+                if (singles == 1) {
+                    solverField.setValue(number, singleCol, singleRow);
+                    result = true;
+                }
+            }
+	}
+		// Get a number from a square
+		int squareVal = solverField.getValue(col,row);
+
+                // Check if the square has a correct number
+		if (squareVal != 0) {
+		    // Remove squareVal from 3x3 section
+		    int startRow = (row/3)*3;
+		    int startCol = (col/3)*3;
+		    for (int remRowSection = startRow;
+			 remRowSection < startRow+3 ; 
+			 remRowSection++) {
+			for (int remColSection = startCol; 
+			     remColSection < startCol+3 ; 
+			     remColSection++) {
+			    
+			    solverField.remPossibleNumber(squareVal, 
+							  remColSection, 
+							  remRowSection);
+			}
 		    }
 		}
 	    }
 	}
-	return result;
-    };
-
-    protected boolean fillSinglesCols() {
-	boolean result = false;
-
-	if (false)
-	    System.out.println("fillSinglesCols()");
-	boolean values[] = new boolean[10];
-
-        for (int col = 0; col < fieldSize; col++) {
-	    int emptyX = 0;
-	    int emptyY = 0;
-	    int emptyCnt = 0;
-	    // Set all tried values to false
-	    for (int i = 0 ; i < 10 ; i++)
-		values[i] = false;
-
-	    for (int row = 0; row < fieldSize; row++) {			
-		// Retrive a values from a columne
-		int tempVal = solverField.getValue(col,row);
-
-		if (tempVal == 0) {
-		    emptyCnt++;
-		    emptyX = col;
-		    emptyY = row;
-		}
-		else {
-		    values[tempVal] = true;
-		}
-				
-		//if (emptyCnt > 1)
-		    //break from loop
-		//    break;
-
-		if (row == 8 && emptyCnt < 2) {
-		    result = true;
-		    for (int j = 1; j < 10; j++) {
-			if (values[j] == false) {
-			    solverField.setValue(j, emptyX, emptyY);
-                        }
-		    }	
-		}
-	    }
-	}
-	return result;
-    };
+    }
 
     private boolean verbose = false;
     protected field solverField = new field();
