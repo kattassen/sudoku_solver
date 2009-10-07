@@ -3,5 +3,5 @@
 
 # Ignore temporary files
 *~
-
- 
+*swp
+*\# 

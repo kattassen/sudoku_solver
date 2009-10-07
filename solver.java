@@ -34,6 +34,7 @@ class solver {
 //	    solverField.drawFieldPossible();
             findSinglesRows();
             findSinglesCols();
+            findSinglesBox();
             findNakedPairs();
 //	    solverField.drawFieldPossible();
 
@@ -247,10 +248,13 @@ class solver {
 	return result;
     };
 
-    protected void findSinglesBox() {
+    protected boolean findSinglesBox() {
 	if (false)
 	    System.out.println("findSinglesBox()");
-        int steps = 0;
+        int singleCol = 0;
+        int singleRow = 0;
+        int singles;
+        boolean result = false;
         
         // Check Boxes
         for (int boxCol = 0; boxCol < fieldSize / 3; boxCol++) {
@@ -261,9 +265,9 @@ class solver {
                 // ...in each row.
                 for (int boxRow = 0; boxRow < fieldSize / 3; boxRow++) {
                     // If square is not set, check if the number is left in square
-                    if (solverField.getPossibleNumber(number , col, row)) {
-                        singleCol = col;
-                        singleRow = row;
+                    if (solverField.getPossibleNumber(number , boxCol, boxRow)) {
+                        singleCol = boxCol;
+                        singleRow = boxRow;
                         singles++;
                     }
                 }
@@ -273,29 +277,7 @@ class solver {
                 }
             }
 	}
-		// Get a number from a square
-		int squareVal = solverField.getValue(col,row);
-
-                // Check if the square has a correct number
-		if (squareVal != 0) {
-		    // Remove squareVal from 3x3 section
-		    int startRow = (row/3)*3;
-		    int startCol = (col/3)*3;
-		    for (int remRowSection = startRow;
-			 remRowSection < startRow+3 ; 
-			 remRowSection++) {
-			for (int remColSection = startCol; 
-			     remColSection < startCol+3 ; 
-			     remColSection++) {
-			    
-			    solverField.remPossibleNumber(squareVal, 
-							  remColSection, 
-							  remRowSection);
-			}
-		    }
-		}
-	    }
-	}
+        return result;
     }
 
     private boolean verbose = false;
