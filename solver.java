@@ -15,7 +15,7 @@ class solver {
     public void solve() {
         int correctSquares = 0;
         int iterations = 0;
-        int maxIterations = 7;
+        int maxIterations = 15;
 	
 	solverField.drawFieldCorrect();
 
