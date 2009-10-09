@@ -15,7 +15,7 @@ class solver {
     public void solve() {
         int correctSquares = 0;
         int iterations = 0;
-        int maxIterations = 50;
+        int maxIterations = 7;
 	
 	solverField.drawFieldCorrect();
 
@@ -31,12 +31,10 @@ class solver {
 	    cleanColumns();
 	    cleanBox();
 
-//	    solverField.drawFieldPossible();
             findSinglesRows();
             findSinglesCols();
             findSinglesBox();
-            findNakedPairs();
-//	    solverField.drawFieldPossible();
+            findNakedPairsRow();
 
             correctSquares = 0;
             for (int row = 0; row < fieldSize; row++) {
@@ -59,10 +57,10 @@ class solver {
             System.out.println("Not solved in "+iterations+" iterations"); 
     }
 
-    private void cleanColumns() {
+    private void cleanRows() {
         boolean result = false;
-	if (false)
-	    System.out.println("cleanColumns()");
+	if (verbose)
+	    System.out.println("cleanRows()");
 	int steps = 0;
         
         for (int row = 0; row < fieldSize; row++) {
@@ -79,9 +77,9 @@ class solver {
     }
 
 
-    private void cleanRows() {
-	if (false)
-	    System.out.println("cleanRows()");
+    private void cleanColumns() {
+	if (verbose)
+	    System.out.println("cleanColumns()");
 	int steps = 0;
         
         for (int col = 0; col < fieldSize; col++) {
@@ -98,8 +96,8 @@ class solver {
     }
 
     protected void cleanBox() {
-	if (false)
-	    System.out.println("cleanSections()");
+	if (verbose)
+	    System.out.println("cleanBox()");
         int steps = 0;
         
         for (int row = 0; row < fieldSize; row++) {
@@ -130,13 +128,16 @@ class solver {
 	}
     }
 
-    private boolean findNakedPairs() {
+    private boolean findNakedPairsRow() {
 	boolean result = false;
 	int[][] pair = new int[2][2];
         int pairCount;
         boolean correctPair = true;
         int firstCol = 0;
         int firstRow = 0; 
+
+	if (verbose)
+	    System.out.println("findNakedPairsRow()");
 
         for (int row = 0; row < fieldSize; row++) {
             pairCount = 0;
@@ -162,8 +163,9 @@ class solver {
                                     }
                                     else {
                                         // Second Number correct, naked pair found
+                                        // Remove possible numbers from other squares
                                         for (int j = 0; j < fieldSize; j++) {
-                                            if ((col != firstCol) && (col != j)) {
+                                            if ((firstCol != j) && (col != j)) {
                                                 solverField.remPossibleNumber(pair[0][0], j, row);
                                                 solverField.remPossibleNumber(pair[0][1], j, row);
                                             }
@@ -190,7 +192,7 @@ class solver {
         int singleRow = 0; 
         int singles = 0;
 
-	if (false)
+	if (verbose)
 	    System.out.println("findSinglesRows()");
 	boolean values[] = new boolean[10];
 
@@ -222,7 +224,7 @@ class solver {
         int singleRow = 0; 
         int singles = 0;
 
-	if (false)
+	if (verbose)
 	    System.out.println("findSinglesCols()");
 	boolean values[] = new boolean[10];
 
@@ -249,20 +251,21 @@ class solver {
     };
 
     protected boolean findSinglesBox() {
-	if (false)
+	if (verbose)
 	    System.out.println("findSinglesBox()");
         int singleCol = 0;
         int singleRow = 0;
         int singles;
         boolean result = false;
         
-        // Check Boxes
-        for (int boxCol = 0; boxCol < fieldSize / 3; boxCol++) {
+        // Check each number...
+        for (int number = 1; number < fieldSize+1; number++) {
+            singles = 0;
 
-            // Check each number...
-            for (int number = 1; number < fieldSize+1; number++) {
-                singles = 0;
-                // ...in each row.
+            // ...in the box column...
+            for (int boxCol = 0; boxCol < fieldSize / 3; boxCol++) {
+
+                // ...and in each row.
                 for (int boxRow = 0; boxRow < fieldSize / 3; boxRow++) {
                     // If square is not set, check if the number is left in square
                     if (solverField.getPossibleNumber(number , boxCol, boxRow)) {
@@ -271,10 +274,10 @@ class solver {
                         singles++;
                     }
                 }
-                if (singles == 1) {
-                    solverField.setValue(number, singleCol, singleRow);
-                    result = true;
-                }
+            }
+            if (singles == 1) {
+                solverField.setValue(number, singleCol, singleRow);
+                result = true;
             }
 	}
         return result;
