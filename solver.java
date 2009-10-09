@@ -257,29 +257,35 @@ class solver {
         int singleRow = 0;
         int singles;
         boolean result = false;
+
+        // For each box (3 x 3)...
+        for (int YBox = 0; YBox < fieldSize/3; YBox++) {
+            for (int XBox = 0; XBox < fieldSize/3; XBox++) {
         
-        // Check each number...
-        for (int number = 1; number < fieldSize+1; number++) {
-            singles = 0;
+                // ...check each number...
+                for (int number = 1; number < fieldSize+1; number++) {
+                    singles = 0;
 
-            // ...in the box column...
-            for (int boxCol = 0; boxCol < fieldSize / 3; boxCol++) {
+                    // ...in the box column...
+                    for (int boxCol = 0; boxCol < fieldSize / 3; boxCol++) {
 
-                // ...and in each row.
-                for (int boxRow = 0; boxRow < fieldSize / 3; boxRow++) {
-                    // If square is not set, check if the number is left in square
-                    if (solverField.getPossibleNumber(number , boxCol, boxRow)) {
-                        singleCol = boxCol;
-                        singleRow = boxRow;
-                        singles++;
+                        // ...and in each row.
+                        for (int boxRow = 0; boxRow < fieldSize / 3; boxRow++) {
+                            // If square is not set, check if the number is left in square
+                            if (solverField.getPossibleNumber(number , boxCol + XBox * 3, boxRow + YBox * 3)) {
+                                singleCol = boxCol + XBox * 3;
+                                singleRow = boxRow + YBox * 3;
+                                singles++;
+                            }
+                        }
                     }
-                }
+                    if (singles == 1) {
+                        solverField.setValue(number, singleCol, singleRow);
+                        result = true;
+                    }
+	        }
             }
-            if (singles == 1) {
-                solverField.setValue(number, singleCol, singleRow);
-                result = true;
-            }
-	}
+        }
         return result;
     }
 
