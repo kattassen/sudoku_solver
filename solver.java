@@ -136,9 +136,6 @@ class solver {
         int firstCol = 0;
         int firstRow = 0; 
 
-	if (verbose)
-	    System.out.println("findNakedPairsRow()");
-
         for (int row = 0; row < fieldSize; row++) {
             pairCount = 0;
             correctPair = true;
@@ -183,6 +180,8 @@ class solver {
 		}
 	    }
 	}
+	if (verbose && result)
+	    System.out.println("findNakedPairsRow()");
 	return result;
     }
 
@@ -192,8 +191,6 @@ class solver {
         int singleRow = 0; 
         int singles = 0;
 
-	if (verbose)
-	    System.out.println("findSinglesRows()");
 	boolean values[] = new boolean[10];
 
         for (int row = 0; row < fieldSize; row++) {
@@ -215,6 +212,8 @@ class solver {
                 }
             }
 	}
+	if (verbose && result)
+	    System.out.println("findSinglesRows()");
 	return result;
     };
 
@@ -224,8 +223,6 @@ class solver {
         int singleRow = 0; 
         int singles = 0;
 
-	if (verbose)
-	    System.out.println("findSinglesCols()");
 	boolean values[] = new boolean[10];
 
         for (int col = 0; col < fieldSize; col++) {
@@ -247,12 +244,12 @@ class solver {
                 }
             }
 	}
+        if (verbose && result)
+	    System.out.println("findSinglesCols()");
 	return result;
     };
 
     protected boolean findSinglesBox() {
-	if (verbose)
-	    System.out.println("findSinglesBox()");
         int singleCol = 0;
         int singleRow = 0;
         int singles;
@@ -286,6 +283,8 @@ class solver {
 	        }
             }
         }
+	if (verbose && result)
+	    System.out.println("findSinglesBox()");
         return result;
     }
 
