@@ -34,7 +34,8 @@ class solver {
             findSinglesRows();
             findSinglesCols();
             findSinglesBox();
-            findNakedPairsRow();
+            findNakedPairsRows();
+            findNakedPairsCols();
 
             correctSquares = 0;
             for (int row = 0; row < fieldSize; row++) {
@@ -128,7 +129,7 @@ class solver {
 	}
     }
 
-    private boolean findNakedPairsRow() {
+    private boolean findNakedPairsRows() {
 	boolean result = false;
 	int[][] pair = new int[2][2];
         int pairCount;
@@ -165,6 +166,7 @@ class solver {
                                             if ((firstCol != j) && (col != j)) {
                                                 solverField.remPossibleNumber(pair[0][0], j, row);
                                                 solverField.remPossibleNumber(pair[0][1], j, row);
+                                                result = true;
                                             }
                                         }
                                     }    
@@ -181,7 +183,65 @@ class solver {
 	    }
 	}
 	if (verbose && result)
-	    System.out.println("findNakedPairsRow()");
+	    System.out.println("findNakedPairsRows()");
+	return result;
+    }
+
+    private boolean findNakedPairsCols() {
+	boolean result = false;
+	int[][] pair = new int[2][2];
+        int pairCount;
+        boolean correctPair = true;
+        int firstCol = 0;
+        int firstRow = 0; 
+
+        for (int col = 0; col < fieldSize; col++) {
+            pairCount = 0;
+            correctPair = true;
+	    for (int row = 0; row < fieldSize ; row++) {
+
+		// Check if there is 2 numbers left
+	        if (solverField.getNumbersLeft(col,row) == 2) {
+
+		    // Check which two numbers are left in square
+		    int pairNumbers = 0;
+		    for (int i = 1; i < fieldSize + 1; i++) {
+			if (solverField.getPossibleNumber(i,col, row)) {
+                            if (pairCount == 0) {
+			        pair[pairCount][pairNumbers] = i;
+                                firstCol = col;
+                                firstRow = row;
+                            }
+                            else if (pairCount == 1) {
+                                if (pair[0][pairNumbers] == i) {
+                                    if (correctPair) {
+                                        correctPair = false;
+                                    }
+                                    else {
+                                        // Second Number correct, naked pair found
+                                        // Remove possible numbers from other squares
+                                        for (int j = 0; j < fieldSize; j++) {
+                                            if ((firstRow != j) && (row != j)) {
+                                                solverField.remPossibleNumber(pair[0][0], col, j);
+                                                solverField.remPossibleNumber(pair[0][1], col, j);
+                                                result = true;
+                                            }
+                                        }
+                                    }    
+                                }
+                            }
+
+			    if (pairNumbers++ > 1) {
+                                //error
+                            }
+			}
+		    }
+                    pairCount++;
+		}
+	    }
+	}
+	if (verbose && result)
+	    System.out.println("findNakedPairsCols()");
 	return result;
     }
 
