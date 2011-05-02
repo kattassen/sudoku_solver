@@ -56,6 +56,8 @@ class solver {
             System.out.println("Solved in "+iterations+" iterations"); 
         else
             System.out.println("Not solved in "+iterations+" iterations"); 
+
+        bruteForce(0,0);
     }
 
     private void cleanRows() {
@@ -346,6 +348,80 @@ class solver {
 	if (verbose && result)
 	    System.out.println("findSinglesBox()");
         return result;
+    }
+
+    protected boolean bruteForce(int i, int j) {
+	int val = 1;
+	int next_i,next_j;
+
+	System.out.println("bruteForce()");
+
+        if(solverField.getValue(i,j) != 0)
+             val = 0;
+
+ 	while(val <= 9) 
+	{
+	     System.out.println("Square=" + i + "," + j + ":Value="+val);
+	     if(isValid(i,j,val))
+	     {
+                  if (val != 0)
+                       solverField.setValue(val,i,j);
+
+                  next_i = i + 1;
+                  next_j = j;
+
+		  if (next_i == fieldSize)
+		  {
+		       next_i = 0;
+                       next_j++;
+                  }
+		  if (j + 1 == fieldSize && i + 1 == fieldSize)
+		       return true;
+	          		
+		  if (bruteForce(next_i, next_j))
+                  {
+                       return true; 
+                  }
+                  if (val != 0)
+                       solverField.setValue(0,i,j);
+             }
+             val++;
+        }
+	return false;
+    }
+
+    protected boolean isValid(int i, int j, int val) {
+       int row, col;
+
+       // Check if the value is valid for that square
+       System.out.println("isValid()");
+
+       if (val == 0)
+            return true;
+
+       for (col = 0; col < fieldSize ;col++)
+       {
+            if ((solverField.getValue(col,j) == val) && col != i)
+		return false;
+       }
+       for (row = 0; row < fieldSize ;row++)
+       {
+            if ((solverField.getValue(i,row) == val) && row != j)
+		return false;
+       }
+
+       // Check Box
+       for (col = (i/3)*3; col < (i/3)*3+3; col++)
+       {
+            for (row = (j/3)*3; row < (j/3)*3+3; row++)
+            {
+                 if ((solverField.getValue(col,row) == val) && (col !=i) && row !=j)
+                      return false;
+            }
+       }
+                 
+
+       return true; 
     }
 
     private boolean verbose = false;
